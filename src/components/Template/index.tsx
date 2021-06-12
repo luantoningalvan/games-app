@@ -68,8 +68,8 @@ const Template: React.FC = ({ children }) => {
         <Typography variant="body1" color="textSecondary">
           Desenvolvido utilizando a API do site{" "}
           <MUILink
-            component={Link}
-            to="https://rawg.io/"
+            component="a"
+            href="https://rawg.io/"
             target="_blank"
             rel="noreferrer"
             color="primary"

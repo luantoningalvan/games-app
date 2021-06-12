@@ -1,23 +1,21 @@
-import {
-  Card,
-  CardContent,
-  CardMedia,
-  Container,
-  Grid,
-  Typography,
-} from "@material-ui/core";
+import { Container, Grid } from "@material-ui/core";
 import { useEffect, useState } from "react";
-import { useHistory } from "react-router";
-import axios from "axios";
+import api from "../../services/api";
+import { Game } from "../../components/CardGame/types";
+import CardGame from "../../components/CardGame";
+import ContentLoader from "../../components/ContentLoader";
 
 const Home: React.FC = () => {
-  const { push } = useHistory();
-  const [games, setGames] = useState([]);
+  const [games, setGames] = useState<Game[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     async function fetchData() {
-      const result = await axios.get("https://api.rawg.io/api/games");
-      setGames(result.data);
+      document.title = "GamesApp - Informações sobre os games";
+      setLoading(true);
+      const result = await api.get(`/games`);
+      setGames(result.data.results);
+      setLoading(false);
     }
 
     fetchData();
@@ -25,26 +23,16 @@ const Home: React.FC = () => {
 
   return (
     <Container>
-      <Grid container spacing={2}>
-        {games.map(() => (
-          <Grid item xs={3}>
-            <Card onClick={() => push(`/game/123`)}>
-              <CardMedia
-                component="img"
-                alt="Nome do jogo"
-                height="350"
-                image="https://upload.wikimedia.org/wikipedia/en/thumb/f/f0/Battlefield_V_standard_edition_box_art.jpg/220px-Battlefield_V_standard_edition_box_art.jpg"
-                title="Contemplative Reptile"
-              />
-              <CardContent>
-                <Typography variant="h5">Título do jogo</Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Empresa tal
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
+      <Grid container spacing={3}>
+        <ContentLoader loading={loading}>
+          <>
+            {games.map((game) => (
+              <Grid item xs={12} sm={6} md={4} lg={3}>
+                <CardGame game={game} />
+              </Grid>
+            ))}
+          </>
+        </ContentLoader>
       </Grid>
     </Container>
   );
